@@ -1,11 +1,8 @@
-enum UserRole {
-  contributor = "contributor",
-  maintainer = "maintainer",
-}
+import type { ROLES } from "../../types";
 
 export interface IUser {
   name: string;
   email: string;
   password: string;
-  role?: UserRole;
+  role?: ROLES;
 }
