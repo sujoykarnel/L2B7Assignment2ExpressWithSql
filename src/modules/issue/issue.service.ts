@@ -1,9 +1,11 @@
+import type { JwtPayload } from "jsonwebtoken";
 import { pool } from "../../db";
 import type { IssueQuery } from "../../types";
-import type { IIssue } from "./issue.interface";
+import type { TIssue } from "./issue.interface";
 
-const createIssueIntoDB = async (payload: IIssue, id: number) => {
+const createIssueIntoDB = async (payload: TIssue, user: JwtPayload) => {
   const { title, description, type } = payload;
+  const { id } = user;
 
   // create new issue
   const result = await pool.query(
@@ -55,41 +57,113 @@ const getAllIssuesFromDB = async (query: IssueQuery) => {
 };
 
 const getSingleIssueFromDB = async (id: string) => {
-  //   console.log(id);
-
-  const issueResult = await pool.query(
+  const result = await pool.query(
     `
         SELECT * FROM issues
         WHERE id = $1
         `,
     [id],
   );
-  const issue = issueResult.rows[0];
 
-  if (!issue) {
-    throw new Error("Issue not exist");
-  }
-
-  //   console.log(issue);
-
-  const reporter = (
-    await pool.query(
-      `
+  if (result.rows[0]) {
+    const reporter = (
+      await pool.query(
+        `
               SELECT id, name, role FROM users
               WHERE id = $1
               `,
-      [issue.reporter_id],
-    )
-  ).rows[0];
-  issue.reporter = reporter;
-  delete issue.reporter_id;
+        [result.rows[0].reporter_id],
+      )
+    ).rows[0];
+    result.rows[0].reporter = reporter;
+    delete result.rows[0].reporter_id;
+  }
 
-  //   console.log(issue);
-  return issue;
+  return result;
+};
+
+const updateIssueFromDB = async (
+  payload: TIssue,
+  id: string,
+  user: JwtPayload,
+) => {
+  const { title, description, type } = payload;
+
+  const issueResult = await pool.query(
+    `
+        SELECT * FROM issues
+        WHERE id= $1
+        `,
+    [id],
+  );
+
+  const issue = issueResult.rows[0];
+
+  //   console.log("issue servece", issue);
+
+  if (issue && user.role === "contributor") {
+    // check issue
+    if (issue.reporter_id !== user.id) {
+      throw new Error("Unauthorized!");
+    }
+
+    // only open issue
+    if (issue.status !== "open") {
+      throw new Error("Contributor can only update open issues");
+    }
+  }
+
+  const result = await pool.query(
+    `
+          UPDATE issues
+          SET
+              title = COALESCE($1, title),
+              description= COALESCE($2, description),
+              type= COALESCE($3, type),
+              updated_at = CURRENT_TIMESTAMP
+          WHERE id= $4
+          RETURNING *
+          `,
+    [title, description, type, id],
+  );
+  // console.log(result)
+  return result;
+};
+
+const updateIssueStatusFromDB = async (status: string, id: string) => {
+  const result = await pool.query(
+    `
+        UPDATE issues
+        SET
+            status = $1,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2
+        RETURNING *
+        `,
+    [status, id],
+  );
+
+  return result;
+};
+
+const deleteIssueFromDB = async (id: string) => {
+//   console.log(id);
+  const result = await pool.query(
+    `
+        DELETE FROM issues
+        WHERE id = $1
+        `,
+    [id],
+  );
+
+  return result;
 };
 
 export const issueService = {
   createIssueIntoDB,
   getAllIssuesFromDB,
   getSingleIssueFromDB,
+  updateIssueFromDB,
+  updateIssueStatusFromDB,
+  deleteIssueFromDB,
 };

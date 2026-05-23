@@ -10,7 +10,7 @@ export type ROLES = keyof typeof USER_ROLE;
 export const ISSUE_TYPE = {
   bug: "bug",
   feature_request: "feature_request",
-};
+} as const;
 
 export type ISSUE_TYPES = keyof typeof ISSUE_TYPE;
 
@@ -19,7 +19,7 @@ export const ISSUE_STATUS = {
   open: "open",
   in_progress: "in_progress",
   resolved: "resolved",
-};
+} as const;
 
 export type ISSUE_STATUSES = keyof typeof ISSUE_STATUS;
 

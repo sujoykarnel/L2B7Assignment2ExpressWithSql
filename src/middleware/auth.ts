@@ -44,7 +44,7 @@ const auth = (...roles: ROLES[]) => {
 
       // check user role
       if (roles.length && !roles.includes(user.role)) {
-        sendResponse(res, {
+        return sendResponse(res, {
           statusCode: 403,
           success: false,
           message: "Forbidden!",
