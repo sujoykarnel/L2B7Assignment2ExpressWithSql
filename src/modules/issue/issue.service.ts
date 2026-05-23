@@ -54,7 +54,42 @@ const getAllIssuesFromDB = async (query: IssueQuery) => {
   return issues;
 };
 
+const getSingleIssueFromDB = async (id: string) => {
+  //   console.log(id);
+
+  const issueResult = await pool.query(
+    `
+        SELECT * FROM issues
+        WHERE id = $1
+        `,
+    [id],
+  );
+  const issue = issueResult.rows[0];
+
+  if (!issue) {
+    throw new Error("Issue not exist");
+  }
+
+  //   console.log(issue);
+
+  const reporter = (
+    await pool.query(
+      `
+              SELECT id, name, role FROM users
+              WHERE id = $1
+              `,
+      [issue.reporter_id],
+    )
+  ).rows[0];
+  issue.reporter = reporter;
+  delete issue.reporter_id;
+
+  //   console.log(issue);
+  return issue;
+};
+
 export const issueService = {
   createIssueIntoDB,
   getAllIssuesFromDB,
+  getSingleIssueFromDB,
 };
