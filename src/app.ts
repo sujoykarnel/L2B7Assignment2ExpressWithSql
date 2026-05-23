@@ -5,6 +5,7 @@ import express, {
 } from "express";
 import { authRoute } from "./modules/auth/auth.route";
 import { issueRoute } from "./modules/issue/issue.route";
+import globalErrorHandler from "./utility/globalErrorHandler";
 
 const app: Application = express();
 const port = 5000;
@@ -18,7 +19,11 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
+// routes
 app.use("/api/auth", authRoute);
 app.use("/api/issues", issueRoute);
+
+// global error handler
+app.use(globalErrorHandler);
 
 export default app;

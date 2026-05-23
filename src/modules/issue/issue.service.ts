@@ -1,9 +1,8 @@
 import { pool } from "../../db";
 import type { IIssue } from "./issue.interface";
 
-const createIssueIntoDB = async (payload: IIssue, reporter_id: number) => {
+const createIssueIntoDB = async (payload: IIssue, id: number) => {
   const { title, description, type } = payload;
-  console.log(reporter_id);
 
   // create new issue
   const result = await pool.query(
@@ -12,7 +11,7 @@ const createIssueIntoDB = async (payload: IIssue, reporter_id: number) => {
         VALUES ($1, $2, $3, 'open', $4)
         RETURNING *
         `,
-    [title, description, type, reporter_id],
+    [title, description, type, id],
   );
 
   return result.rows[0];
