@@ -35,9 +35,15 @@ A role-based Issue Tracking REST API built with Express.js, TypeScript, PostgreS
 
 - POST /api/issues
 - GET /api/issues
+- GET /api/issues/:id (Get single issue)
 - PATCH /api/issues/:id
 - PATCH /api/issues/:id/status (Maintainer only)
 - DELETE /api/issues/:id (Maintainer only)
+
+## Issue Types
+
+- bug
+- feature_request
 
 ## Issue Status
 
@@ -47,7 +53,7 @@ A role-based Issue Tracking REST API built with Express.js, TypeScript, PostgreS
 
 ## Environment Variables
 
-PORT=5000
-DATABASE_URL=your_db_url
-JWT_SECRET=your_secret
-JWT_EXPIRES_IN=1d
+- PORT=5000
+- DATABASE_URL=your_db_url
+- JWT_SECRET=your_secret
+- JWT_EXPIRES_IN=1d
