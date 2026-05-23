@@ -22,3 +22,9 @@ export const ISSUE_STATUS = {
 };
 
 export type ISSUE_STATUSES = keyof typeof ISSUE_STATUS;
+
+export type IssueQuery = {
+  sort?: "newest" | "oldest";
+  type?: "bug" | "feature_request";
+  status?: "open" | "in_progress" | "resolved";
+};
