@@ -56,4 +56,4 @@ A role-based Issue Tracking REST API built with Express.js, TypeScript, PostgreS
 - PORT=5000
 - DATABASE_URL=your_db_url
 - JWT_SECRET=your_secret
-- JWT_EXPIRES_IN=1d
+
