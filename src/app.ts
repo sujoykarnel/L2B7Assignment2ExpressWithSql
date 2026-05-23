@@ -6,11 +6,17 @@ import express, {
 import { authRoute } from "./modules/auth/auth.route";
 import { issueRoute } from "./modules/issue/issue.route";
 import globalErrorHandler from "./utility/globalErrorHandler";
+import cors from "cors";
 
 const app: Application = express();
-const port = 5000;
 
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: "http://localhost:5000",
+  }),
+);
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
